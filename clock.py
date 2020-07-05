@@ -24,6 +24,16 @@ class ClockThread(threading.Thread):
     def setMode(self, mode):
         self.mode = mode
 
+    def incrementMode(self):
+        if self.mode == MODE_OFF:
+            self.mode = MODE_DATE
+        elif self.mode == MODE_DATE:
+            self.mode = MODE_TIME
+        elif self.mode == MODE_TIME:
+            self.mode = MODE_TIME_TENTHS
+        else:
+            self.mode = MODE_OFF
+
     def indicateGPSSynced(self):
         self.gpsSynced = 5
 
