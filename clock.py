@@ -6,12 +6,12 @@ import traceback
 from smbpi.max6921 import Max6921
 
 class ClockThread(threading.Thread):
-    def __init__(self, pi):
+    def __init__(self, pi, pilock=None):
         threading.Thread.__init__(self)
         self.pi = pi
         self.gpsSynced = 0
         self.lastSecond = 0
-        self.vfd = Max6921(pi=pi)
+        self.vfd = Max6921(pi=pi, pilock=pilock)
         self.vfd.setDP(0, True)
         self.vfd.setDP(2, True)
         self.vfd.setDP(4, True)

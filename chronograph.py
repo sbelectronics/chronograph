@@ -1,35 +1,26 @@
 from __future__ import print_function
 import pigpio
+import threading
 import time
 from clock import ClockThread
-from smbpi.gps import GPS
-
-
-class GPSSync(GPS):
-    def __init__(self, pi, clock):
-        super().__init__(pi)
-        self.clock = clock
-
-    def eventGPRMC(self):
-        super().eventGPRMC()
-
-        if time.daylight:
-            timestamp = time.mktime(self.getDateTime().timetuple()) - time.altzone
-        else:
-            timestamp = time.mktime(self.getDateTime().timetuple()) - time.timezone    
-        time.clock_settime(time.CLOCK_REALTIME, timestamp)
-
-        self.clock.indicateGPSSynced()
+from hayes import HayesHandlerThread
 
 
 def main():
     pi = pigpio.pi()
 
-    threadClock = ClockThread(pi)
+    # clear all waveforms
+    pi.wave_clear()
+
+    # allocate a lock to synchronize acceess to creating
+    # waves with pgipio
+    pilock = threading.Lock()
+
+    threadClock = ClockThread(pi, pilock=pilock)
     threadClock.start()
 
-    #threadGPS = GPSSync(pi, threadClock)
-    #threadGPS.start()
+    threadHayes = HayesHandlerThread(pi, pilock=pilock)
+    threadHayes.start()
 
     while True:
         time.sleep(1)
