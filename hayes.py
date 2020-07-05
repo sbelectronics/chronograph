@@ -4,6 +4,7 @@ import pigpio
 import sys
 import threading
 import time
+from clock import MODE_OFF, MODE_DATE, MODE_TIME, MODE_TIME_TENTHS
 
 DEFAULT_PIN_TX = 24
 DEFAULT_PIN_RX = 23
@@ -15,7 +16,7 @@ RESULT_WRITE_PROTECT = "9"
 
 
 class HayesHandlerThread(threading.Thread):
-    def __init__(self, pi, tx=DEFAULT_PIN_TX, rx=DEFAULT_PIN_RX, baud=DEFAULT_BAUD, pilock=None):
+    def __init__(self, pi, tx=DEFAULT_PIN_TX, rx=DEFAULT_PIN_RX, baud=DEFAULT_BAUD, pilock=None, clock=None):
         threading.Thread.__init__(self)
         self.pi = pi
         self.baud = baud
@@ -28,6 +29,7 @@ class HayesHandlerThread(threading.Thread):
         self.hr24 = True
         self.pilock = pilock
         self.waveSerial = None
+        self.clock = clock
         
         self.rxBuffer = ""
 
@@ -47,6 +49,10 @@ class HayesHandlerThread(threading.Thread):
         self.pi.set_mode(self.tx, pigpio.OUTPUT)
 
         self.output("hello, world\r\n")
+
+    def setMode(self, mode):
+        if self.clock:
+            self.clock.setMode(mode)
 
     def output(self, line):
         line = line + "\r"
@@ -75,9 +81,17 @@ class HayesHandlerThread(threading.Thread):
         dt = datetime.datetime.now()
         uline = line.upper()
         if uline == "ATDT":
-            pass  # display mode: time
-        elif uline == "ATDD" :
-            pass  # display mode: date
+            # display mode: time
+            self.setMode(MODE_TIME)
+        elif uline == "ATDD":
+            # display mode: date
+            self.setMode(MODE_DATE)
+        elif uline == "ATDE":
+            # display mode: tenths (nonstandard)
+            self.setMode(MODE_TIME_TENTHS)
+        elif uline == "ATDO":
+            # display mode: off (nonstandard)
+            self.setMode(MODE_OFF)
         elif uline == "ATRD":
             s = "%02d%s%02d%s%02d" % \
                 (dt.year-2000, self.dateSep, dt.month, self.dateSep, dt.day)

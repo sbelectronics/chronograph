@@ -5,6 +5,12 @@ import time
 import traceback
 from smbpi.max6921 import Max6921
 
+MODE_OFF = 1
+MODE_DATE = 2
+MODE_TIME = 3
+MODE_TIME_TENTHS = 4
+
+
 class ClockThread(threading.Thread):
     def __init__(self, pi, pilock=None):
         threading.Thread.__init__(self)
@@ -12,18 +18,31 @@ class ClockThread(threading.Thread):
         self.gpsSynced = 0
         self.lastSecond = 0
         self.vfd = Max6921(pi=pi, pilock=pilock)
-        self.vfd.setDP(0, True)
-        self.vfd.setDP(2, True)
-        self.vfd.setDP(4, True)
-        self.vfd.setDP(6, True)
+        self.mode = MODE_TIME_TENTHS
         self.daemon = True
+
+    def setMode(self, mode):
+        self.mode = mode
 
     def indicateGPSSynced(self):
         self.gpsSynced = 5
 
     def runOnce(self):
         now = datetime.datetime.now()
-        timeStr = now.strftime("%H%M%S") + ("%d" % (now.microsecond / 100000))
+
+        if self.mode == MODE_OFF:
+            timeStr = ""
+            self.vfd.setDPList([])
+        elif self.mode == MODE_DATE:
+            timeStr = now.strftime("%y %m %d")
+            self.vfd.setDPList([])
+        elif self.mode == MODE_TIME:
+            timeStr = now.strftime("%H %M %S")
+            self.vfd.setDPList([])
+        elif self.mode == MODE_TIME_TENTHS:
+            timeStr = now.strftime("%H%M%S") + ("%d" % (now.microsecond / 100000))
+            self.vfd.setDPList([0, 2, 4, 6])
+
         self.vfd.setLeader(top=(self.gpsSynced > 0))
         self.vfd.displayString(timeStr)
 

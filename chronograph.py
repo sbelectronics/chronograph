@@ -19,7 +19,7 @@ def main():
     threadClock = ClockThread(pi, pilock=pilock)
     threadClock.start()
 
-    threadHayes = HayesHandlerThread(pi, pilock=pilock)
+    threadHayes = HayesHandlerThread(pi, pilock=pilock, clock=threadClock)
     threadHayes.start()
 
     while True:
