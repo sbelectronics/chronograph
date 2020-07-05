@@ -2,11 +2,15 @@ from __future__ import print_function
 import pigpio
 import threading
 import time
+import RPi.GPIO as GPIO
 from clock import ClockThread
 from hayes import HayesHandlerThread
+from buttons import ButtonThread
 
 
 def main():
+    GPIO.setmode(GPIO.BCM)
+
     pi = pigpio.pi()
 
     # clear all waveforms
@@ -21,6 +25,9 @@ def main():
 
     threadHayes = HayesHandlerThread(pi, pilock=pilock, clock=threadClock)
     threadHayes.start()
+
+    threadButtons = ButtonThread(clock=threadClock)
+    threadButtons.start()
 
     while True:
         time.sleep(1)
