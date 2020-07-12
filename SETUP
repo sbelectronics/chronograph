@@ -1,0 +1,19 @@
+# Disable serial console
+export LANG=posix
+export TERM=vt102
+raspi-config
+  navigate to option 5 "interfacing options"
+  navigate to P6 serial
+     turn off shell
+     leave uart on
+
+# Configure serial and Disable TTY echo
+stty -F /dev/serial0 -echo
+stty -F /dev/serial0 9600
+
+# Test the GPS receiver
+cat /dev/serial0
+
+# auto start
+sudo crontab -e
+    @reboot bash /home/pi/chronograph/start_chronograph.sh &> /dev/null

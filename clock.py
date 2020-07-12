@@ -50,8 +50,8 @@ class ClockThread(threading.Thread):
             timeStr = now.strftime("%H %M %S")
             self.vfd.setDPList([])
         elif self.mode == MODE_TIME_TENTHS:
-            timeStr = now.strftime("%H%M%S") + ("%d" % (now.microsecond / 100000))
-            self.vfd.setDPList([0, 2, 4, 6])
+            timeStr = now.strftime("%H%M%S") + (" %d" % (now.microsecond / 100000))
+            self.vfd.setDPList([4, 6])
 
         self.vfd.setLeader(top=(self.gpsSynced > 0))
         self.vfd.displayString(timeStr)

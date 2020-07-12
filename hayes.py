@@ -48,8 +48,6 @@ class HayesHandlerThread(threading.Thread):
 
         self.pi.set_mode(self.tx, pigpio.OUTPUT)
 
-        self.output("hello, world\r\n")
-
     def setMode(self, mode):
         if self.clock:
             self.clock.setMode(mode)
@@ -83,15 +81,19 @@ class HayesHandlerThread(threading.Thread):
         if uline == "ATDT":
             # display mode: time
             self.setMode(MODE_TIME)
+            self.output(RESULT_OKAY)
         elif uline == "ATDD":
             # display mode: date
             self.setMode(MODE_DATE)
+            self.output(RESULT_OKAY)
         elif uline == "ATDE":
             # display mode: tenths (nonstandard)
             self.setMode(MODE_TIME_TENTHS)
+            self.output(RESULT_OKAY)
         elif uline == "ATDO":
             # display mode: off (nonstandard)
             self.setMode(MODE_OFF)
+            self.output(RESULT_OKAY)
         elif uline == "ATRD":
             s = "%02d%s%02d%s%02d" % \
                 (dt.year-2000, self.dateSep, dt.month, self.dateSep, dt.day)
