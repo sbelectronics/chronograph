@@ -7,7 +7,9 @@ The Hayes Chronograph was a device sold in the 80s to serve as a real-time clock
 
 # Blog Post / More Information
 
-For more details, see the blog post at http://www.smbaker.com/
+For more details, see the blog post at https://www.smbaker.com/the-hayes-chronograph-a-remake-for-2020
+
+My website at https://www.smbaker.com/ generally has most of the text, descriptions, and narrative for my projects, so if you've stumbled onto the github repository but not the website, then you probably want to start with the website. There's also links to my youtube videos there.
 
 # Acknowledgements
 
